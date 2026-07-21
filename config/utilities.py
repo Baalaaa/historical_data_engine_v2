@@ -1,6 +1,6 @@
 import os
 
-from loggers import logger
+# from loggers import logger
 
 
 def create_folder():
@@ -13,5 +13,5 @@ def create_folder():
         for folder in folders_names:
             os.makedirs(os.path.join(base_path, folder), exist_ok=True)
     except Exception as e:
-        logger.exception(f"exception occurred while creating folder: {e} !")
+        print(f"exception occurred while creating folder: {e} !")
 

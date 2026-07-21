@@ -207,7 +207,7 @@ class FetchHistoricalData:
 
             df = pd.DataFrame(hist_data_list, columns=["timestamp", "open", "high", "low", "close", "volume", "oi"])
             df.insert(0, "symbol", symbol_name)
-            df.to_csv(f"Data/NSE/Nse_hist_data.csv", index=False)
+            df.to_csv(f"historical_data/Nse_hist_data.csv", index=False)
             logger.info(f"saved file")
             logger.info(f"total symbol: {len(df)}, available data: {len(hist_data_list)} "
                   f"& failed symbol: {len(failed_data_sym_list)} !")

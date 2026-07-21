@@ -1,3 +1,0 @@
-1) take expiry date from user or else user default expiry_date from contract file which is nearest.
-2) add logger.
-3) store failed, retry contracts.
