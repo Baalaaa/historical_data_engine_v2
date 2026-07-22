@@ -1,4 +1,4 @@
 
 # ---- TODO ----
-1) take expiry date from user else use the nearest expiry date !
-2)
+1) take expiry date from user else use the nearest expiry date. ! === Done
+2) retry thrice for failed symbols while fetching historical data.
