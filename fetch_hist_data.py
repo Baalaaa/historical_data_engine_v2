@@ -159,6 +159,82 @@ class FetchHistoricalData:
     #         return None
 
 
+    # def fetch_hist_data_v2(self, df: pd.DataFrame, start_date: str | None, end_date: str | None) -> None:
+    #     try:
+    #         count = 0
+    #         fetched_data_list = []
+    #         failed_data_sym_list = []
+    #         retry_failed_sym_list = []
+    #
+    #         today = pd.Timestamp.today().normalize()
+    #         nearest_date = df[df['expiry_date'] >= today]['expiry_date'].min()
+    #         if start_date is None and end_date is None:
+    #             start_date = nearest_date - timedelta(days=90)
+    #             end_date = nearest_date
+    #
+    #         for row in df.itertuples():
+    #             self.data = {
+    #                 "symbol": row.symbol_ticker,
+    #                 "range_from": start_date,
+    #                 "range_to": end_date,
+    #                 "resolution": "1",
+    #                 "date_format": "1",
+    #                 "cont_flag": "1",
+    #                 "oi_flag": "1"
+    #             }
+    #
+    #             response = self.fyers.history(data=self.data)
+    #             status = response.get('s')
+    #
+    #             if status == 'no_data':
+    #                 logger.warning(f"Failed to fetch for this symbol: {row.symbol_ticker} | Response: {response.get('s')} !")
+    #             if status == 'error':
+    #                 logger.warning(f"Error occurred invalid input parameters: {response.get('s')} !")
+    #             if status == 'ok':
+    #                 fetched_data_list.extend([row.symbol_ticker] + candle for candle in response.get('candles', []))
+    #             else:
+    #                 failed_data_sym_list.append(row.symbol_ticker)
+    #
+    #             if count == 10:
+    #                 logger.warning("sleeping for 5 sec !")
+    #                 time.sleep(5)
+    #                 count = 0
+    #             count += 1
+    #
+    #         for i in range(3):
+    #             # logger.info(f"Failed symbol: {failed_data_sym_list} & count: {len(failed_data_sym_list)} !")
+    #             for sym in failed_data_sym_list:
+    #                 self.data = {
+    #                     "symbol": sym,
+    #                     "range_from": start_date,
+    #                     "range_to": end_date,
+    #                     "resolution": "1",
+    #                     "date_format": "1",
+    #                     "cont_flag": "1",
+    #                     "oi_flag": "1"
+    #                 }
+    #                 response = self.fyers.history(data=self.data)
+    #                 status = response.get('s')
+    #                 if status == 'ok':
+    #                     fetched_data_list.extend([sym] + candle for candle in response.get('candles', []))
+    #                 else:
+    #                     retry_failed_sym_list.append(sym)
+    #
+    #         # failed_data_sym_list = retry_failed_sym_list.copy()
+    #         hist_df = pd.DataFrame(fetched_data_list,columns=["symbol", "timestamp", "open", "high", "low", "close",
+    #                                                           "volume", "oi"])
+    #
+    #         logger.info(f"saved file")
+    #         output_file = "historical_data/bse_hist_data.csv"
+    #         hist_df.to_csv(f"{output_file}", index=False)
+    #         logger.info(f"total symbol: {df['underlying_symbol'].count()}, "
+    #                     f"fetched data: {(df['underlying_symbol'].count() - len(failed_data_sym_list))} & "
+    #                     f"failed symbol: {len(failed_data_sym_list)} !")
+    #
+    #     except Exception as e:
+    #         logger.error(f"exception occurred while fetching hist data: {e} !")
+
+
     def fetch_hist_data(self, df: pd.DataFrame, start_date: str | None, end_date: str | None) -> None:
         try:
             count = 0
@@ -217,80 +293,6 @@ class FetchHistoricalData:
 
             logger.info(f"saved file")
             logger.info(f"total symbol: {df['underlying_symbol'].count()}, fetched data: {(df['underlying_symbol'].count() - len(failed_data_sym_list))} & failed symbol: {len(failed_data_sym_list)} !")
-
-        except Exception as e:
-            logger.error(f"exception occurred while fetching hist data: {e} !")
-
-
-    def fetch_hist_data_v2(self, df: pd.DataFrame, start_date: str | None, end_date: str | None) -> None:
-        try:
-            count = 0
-            fetched_data_list = []
-            failed_data_sym_list = []
-
-            today = pd.Timestamp.today().normalize()
-            nearest_date = df[df['expiry_date'] >= today]['expiry_date'].min()
-            if start_date is None and end_date is None:
-                start_date = nearest_date - timedelta(days=90)
-                end_date = nearest_date
-
-            for row in df.itertuples():
-                self.data = {
-                    "symbol": row.symbol_ticker,
-                    "range_from": start_date,
-                    "range_to": end_date,
-                    "resolution": "1",
-                    "date_format": "1",
-                    "cont_flag": "1",
-                    "oi_flag": "1"
-                }
-
-                response = self.fyers.history(data=self.data)
-                status = response.get('s')
-                if status == 'ok':
-                    fetched_data_list.extend([row.symbol_ticker] + candle for candle in response.get('candles', []))
-                elif status == 'no_data':
-                    logger.warning(f"Failed to fetch for this symbol: {row.symbol_ticker} | Response: {response.get('s')} !")
-                elif status == 'error':
-                    logger.warning(f"Error occurred invalid input parameters: {response.get('s')} !")
-                else:
-                    failed_data_sym_list.append(row.symbol_ticker)
-
-                if count == 10:
-                    logger.warning("sleeping for 5 sec !")
-                    time.sleep(5)
-                    count = 0
-                count += 1
-
-
-            for i in range(1, 3):
-                logger.info(f"Failed symbol: {failed_data_sym_list}")
-                for sym in failed_data_sym_list:
-                    self.data = {
-                        "symbol": sym,
-                        "range_from": start_date,
-                        "range_to": end_date,
-                        "resolution": "1",
-                        "date_format": "1",
-                        "cont_flag": "1",
-                        "oi_flag": "1"
-                    }
-                    response = self.fyers.history(data=self.data)
-                    status = response.get('s')
-                    if status == 'ok':
-                        fetched_data_list.extend([sym] + candle for candle in response.get('candles', []))
-                    else:
-                        failed_data_sym_list.append(sym)
-
-            hist_df = pd.DataFrame(fetched_data_list,columns=["symbol", "timestamp", "open", "high", "low", "close",
-                                                              "volume", "oi"])
-
-            logger.info(f"saved file")
-            output_file = "historical_data/bse_hist_data.csv"
-            hist_df.to_csv(f"{output_file}", index=False)
-            logger.info(f"total symbol: {df['underlying_symbol'].count()}, "
-                        f"fetched data: {(df['underlying_symbol'].count() - len(failed_data_sym_list))} & "
-                        f"failed symbol: {len(failed_data_sym_list)} !")
 
         except Exception as e:
             logger.error(f"exception occurred while fetching hist data: {e} !")

@@ -26,4 +26,4 @@ if __name__ == '__main__':
     # fetch_hist_obj.fetch_hist_data(symbol="NSE:NIFTY26JAN25500CE", start_date="2026-04-01", end_date="2026-06-30")
 
 
-    fetch_hist_obj.fetch_hist_data_v2(df=nse_df, start_date="2026-07-01", end_date="2026-07-10")
+    fetch_hist_obj.fetch_hist_data_v2(df=bse_df, start_date="2026-07-01", end_date="2026-07-10")
